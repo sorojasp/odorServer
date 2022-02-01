@@ -6,6 +6,8 @@ from app.server.server import Server
 
 
 from datetime import datetime
+import pytz
+from pytz import timezone
 
 app = Flask(__name__)
 
@@ -72,7 +74,7 @@ def post():
             probe_mode_boolean=True
 
 
-        dateTime=datetime.now()
+        dateTime=datetime.now(tz = timezone('America/Bogota'))
 
         s1.getDatabaseObject().session.add(new_ubication)
         s1.getDatabaseObject().session.commit()
@@ -98,6 +100,8 @@ def post():
 def get():
 
     try:
+
+        
 
         concentrations=GasConcentration.query.filter_by(humidity=33).all()
         print(concentrations)
