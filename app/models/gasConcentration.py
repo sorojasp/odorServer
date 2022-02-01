@@ -23,11 +23,12 @@ class GasConcentration(db.Model):
     temperature=db.Column(db.Float)
     humidity=db.Column(db.Float)
     dateTime=db.Column(db.DateTime)
+    probe_mode=db.Column(db.Boolean)
     ubication_id = db.Column(db.Integer, db.ForeignKey('ubication.id'),
         nullable=False)
 
 
-    def __init__(self, NH3, CO2, CH4, H2S, SO2, temperature, humidity, dateTime, ubication_id):
+    def __init__(self, NH3, CO2, CH4, H2S, SO2, temperature, humidity, dateTime, ubication_id, probe_mode):
         self.NH3=NH3
         self.CO2=CO2
         self.CH4=CH4
@@ -37,3 +38,4 @@ class GasConcentration(db.Model):
         self.humidity=humidity
         self.dateTime=dateTime
         self.ubication_id=ubication_id
+        self.probe_mode=probe_mode

@@ -15,10 +15,10 @@ s1=Server(app)
 from app.models.ubication import Ubication
 from app.models.gasConcentration import GasConcentration
 
-#import schema
+#import schemas
 from app.schemas.gasConcentration import GasConcentrationSchema
 
-#gas concentration schema
+#get objet of gas concentration schema
 gas_schema=GasConcentrationSchema()
 
 # Get db object
@@ -62,6 +62,14 @@ def post():
         SO2=float(request.args.get("E"))
         temperature=float(request.args.get("F"))
         humidity=float(request.args.get("G"))
+        probe_mode=float(request.args.get("probe_mode"))
+        probe_mode_boolean=False
+
+        if probe_mode==0:
+            probe_mode_boolean=False
+        elif probe_mode==1:
+            probe_mode_boolean=True
+
 
         dateTime=datetime.now()
 
@@ -71,12 +79,11 @@ def post():
         print("new ubication:", new_ubication)
 
 
-        new_gas_concentation=GasConcentration(NH3, CO2, CH4, H2S, SO2, temperature, humidity, dateTime, new_ubication.id)
+
+
+        new_gas_concentation=GasConcentration(NH3, CO2, CH4, H2S, SO2, temperature, humidity, dateTime, new_ubication.id,probe_mode_boolean)
         s1.getDatabaseObject().session.add(new_gas_concentation)
         s1.getDatabaseObject().session.commit()
-
-
-
 
 
         return gas_schema.jsonify(new_gas_concentation)
