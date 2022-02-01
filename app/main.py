@@ -20,6 +20,7 @@ from app.schemas.gasConcentration import GasConcentrationSchema
 
 #get objet of gas concentration schema
 gas_schema=GasConcentrationSchema()
+gases_schema = GasConcentrationSchema(many=True)
 
 # Get db object
 db=s1.getDatabaseObject()
@@ -91,3 +92,16 @@ def post():
     except Exception as error:
         print(error)
         return "Error!"
+
+
+@app.route("/gasConcentrations", methods=["GET"])
+def get():
+
+    try:
+
+        concentrations=GasConcentration.query.filter_by(humidity=33).all()
+        print(concentrations)
+        return gases_schema.jsonify(concentrations)
+
+    except Exception as error:
+        return str(error)
