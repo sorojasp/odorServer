@@ -15,13 +15,13 @@ https://flask-sqlalchemy.palletsprojects.com/en/2.x/models/#one-to-many-relation
 class GasConcentration(db.Model):
     __tablename__ = 'gasConcentration'
     id = db.Column(db.Integer, primary_key=True)
-    NH3=db.Column(db.Float)
-    CO2=db.Column(db.Float)
-    CH4=db.Column(db.Float)
-    H2S=db.Column(db.Float)
-    SO2=db.Column(db.Float)
-    temperature=db.Column(db.Float)
-    humidity=db.Column(db.Float)
+    NH3=db.Column(db.String(20))
+    CO2=db.Column(db.String(20))
+    CH4=db.Column(db.String(20))
+    H2S=db.Column(db.String(20))
+    SO2=db.Column(db.String(20))
+    temperature=db.Column(db.String(20))
+    humidity=db.Column(db.String(20))
     dateTime=db.Column(db.DateTime)
     probe_mode=db.Column(db.Boolean)
     ubication_id = db.Column(db.Integer, db.ForeignKey('ubication.id'),

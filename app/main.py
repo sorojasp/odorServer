@@ -9,6 +9,9 @@ from datetime import datetime
 import pytz
 from pytz import timezone
 
+#import
+import json
+
 app = Flask(__name__)
 
 s1=Server(app)
@@ -51,21 +54,21 @@ def post():
         #print(request.json['lastname']) get data from body
 
         #Ubication
-        lat=float(request.args.get("H"))
-        lng=float(request.args.get("I"))
+        lat=request.args.get("H")
+        lng=request.args.get("I")
 
         new_ubication=Ubication(lat,lng)
 
 
 
-        NH3=float(request.args.get("A"))
-        CO2=float(request.args.get("B"))
-        CH4=float(request.args.get("C"))
-        H2S=float(request.args.get("D"))
-        SO2=float(request.args.get("E"))
-        temperature=float(request.args.get("F"))
-        humidity=float(request.args.get("G"))
-        probe_mode=float(request.args.get("probe_mode"))
+        NH3=request.args.get("A")
+        CO2=request.args.get("B")
+        CH4=request.args.get("C")
+        H2S=request.args.get("D")
+        SO2=request.args.get("E")
+        temperature=request.args.get("F")
+        humidity=request.args.get("G")
+        probe_mode=request.args.get("probe_mode")
         probe_mode_boolean=False
 
         if probe_mode==0:
@@ -84,7 +87,7 @@ def post():
 
 
 
-        new_gas_concentation=GasConcentration(NH3, CO2, CH4, H2S, SO2, temperature, humidity, dateTime, new_ubication.id,probe_mode_boolean)
+        new_gas_concentation=GasConcentration(NH3, CO2, CH4, H2S, SO2, temperature, humidity, dateTime, new_ubication,probe_mode_boolean)
         s1.getDatabaseObject().session.add(new_gas_concentation)
         s1.getDatabaseObject().session.commit()
 
@@ -110,7 +113,9 @@ def get():
         datetime_start = datetime.strptime(request.args.get("datetimeStart"), format_data)
         datetime_end =  datetime.strptime(request.args.get("datetimeEnd"), format_data)
 
-        query=GasConcentration.query.filter(GasConcentration.dateTime>=datetime_start).filter(GasConcentration.dateTime<=datetime_end)
+        query_filter=GasConcentration.query
+
+        query=query_filter.filter(GasConcentration.dateTime>=datetime_start).filter(GasConcentration.dateTime<=datetime_end)
 
         # get ubications
         ubications_list:list=[]
@@ -119,29 +124,35 @@ def get():
             print(ubications)
             lat_lng=ubications.split(",")
             ubications_list.append({
-                               "lat":lat_lng[0],
-                               "lng":lat_lng[1]
+                               "lat":lat_lng[0].split(":")[1],
+                               "lng":lat_lng[1].split(":")[1]
             })
 
 
-        for ubication in ubications_list:
-            print(ubication)
+        for ubication_dict in ubications_list:
+
+            query_ubication= Ubication.query.filter(Ubication.lat==ubication_dict['lat']).filter(Ubication.lng==ubication_dict['lng']).first()
+
+            if query_ubication != None:
+                #Ubication.query.filter_by(id=GasConcentration.ubication_id).first().lat
+                print("lat: =) ", Ubication.query.filter_by(id=GasConcentration.ubication_id).first().lat)
+
+                query=query.filter(Ubication.query.filter_by(id=GasConcentration.ubication_id).first().lat==query_ubication.lat).filter(Ubication.query.filter_by(id=GasConcentration.ubication_id).first().lng==query_ubication.lng)
 
 
 
-
-
-
-
-
-
-
-
-
-
+        print(query)
         concentrations=query.all()
         print(concentrations)
+
+
         return gases_schema.jsonify(concentrations)
 
+
     except Exception as error:
-        return str(error)
+
+        response={
+                "result":False,
+                "detail":str(error)
+                }
+        return json.dumps(response, indent = 4)
