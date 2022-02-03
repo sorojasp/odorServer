@@ -101,9 +101,45 @@ def get():
 
     try:
 
-        
+        format_data = "%Y-%m-%dT%H:%M:%S"
+        # Using strptime with datetime we will format
+        # string into datetime
 
-        concentrations=GasConcentration.query.filter_by(humidity=33).all()
+
+        #get datetime
+        datetime_start = datetime.strptime(request.args.get("datetimeStart"), format_data)
+        datetime_end =  datetime.strptime(request.args.get("datetimeEnd"), format_data)
+
+        query=GasConcentration.query.filter(GasConcentration.dateTime>=datetime_start).filter(GasConcentration.dateTime<=datetime_end)
+
+        # get ubications
+        ubications_list:list=[]
+
+        for ubications in request.args.get("ubications").split(";"):
+            print(ubications)
+            lat_lng=ubications.split(",")
+            ubications_list.append({
+                               "lat":lat_lng[0],
+                               "lng":lat_lng[1]
+            })
+
+
+        for ubication in ubications_list:
+            print(ubication)
+
+
+
+
+
+
+
+
+
+
+
+
+
+        concentrations=query.all()
         print(concentrations)
         return gases_schema.jsonify(concentrations)
 
