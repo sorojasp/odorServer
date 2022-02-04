@@ -57,9 +57,17 @@ def post():
         lat=request.args.get("H")
         lng=request.args.get("I")
 
-        new_ubication=Ubication(lat,lng)
 
 
+
+
+
+        ubication=Ubication.query.filter(Ubication.lat==lat).filter(Ubication.lng==lng).first()
+
+        if ubication==None:
+            ubication=Ubication(lat,lng)
+            s1.getDatabaseObject().session.add(ubication)
+            s1.getDatabaseObject().session.commit()
 
         NH3=request.args.get("A")
         CO2=request.args.get("B")
@@ -79,15 +87,14 @@ def post():
 
         dateTime=datetime.now(tz = timezone('America/Bogota'))
 
-        s1.getDatabaseObject().session.add(new_ubication)
-        s1.getDatabaseObject().session.commit()
 
-        print("new ubication:", new_ubication)
 
+        print("new ubication:", ubication)
 
 
 
-        new_gas_concentation=GasConcentration(NH3, CO2, CH4, H2S, SO2, temperature, humidity, dateTime, new_ubication,probe_mode_boolean)
+
+        new_gas_concentation=GasConcentration(NH3, CO2, CH4, H2S, SO2, temperature, humidity, dateTime, ubication.id,probe_mode_boolean)
         s1.getDatabaseObject().session.add(new_gas_concentation)
         s1.getDatabaseObject().session.commit()
 
