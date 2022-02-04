@@ -120,7 +120,11 @@ def get():
         datetime_start = datetime.strptime(request.args.get("datetimeStart"), format_data)
         datetime_end =  datetime.strptime(request.args.get("datetimeEnd"), format_data)
 
+
+
         query_filter=GasConcentration.query
+
+        query=None
 
         query=query_filter.filter(GasConcentration.dateTime>=datetime_start).filter(GasConcentration.dateTime<=datetime_end)
 
@@ -135,25 +139,34 @@ def get():
                                "lng":lat_lng[1].split(":")[1]
             })
 
+        location_in_database=False
+
+
+
 
         for ubication_dict in ubications_list:
 
             query_ubication= Ubication.query.filter(Ubication.lat==ubication_dict['lat']).filter(Ubication.lng==ubication_dict['lng']).first()
 
             if query_ubication != None:
-                #Ubication.query.filter_by(id=GasConcentration.ubication_id).first().lat
-                print("lat: =) ", Ubication.query.filter_by(id=GasConcentration.ubication_id).first().lat)
-
-                query=query.filter(Ubication.query.filter_by(id=GasConcentration.ubication_id).first().lat==query_ubication.lat).filter(Ubication.query.filter_by(id=GasConcentration.ubication_id).first().lng==query_ubication.lng)
-
-
-
-        print(query)
-        concentrations=query.all()
-        print(concentrations)
+                query=query.filter(GasConcentration.ubication_id ==query_ubication.id)
+                location_in_database=True
+                print("location_in_database: ", location_in_database)
+                print("query_ubication.id", query_ubication.id)
 
 
-        return gases_schema.jsonify(concentrations)
+        
+
+
+        if location_in_database==True:
+            concentrations=query.all()
+        else:
+            concentrations=[]
+
+        #print("query:", query)
+
+
+        return gases_schema.jsonify(query.all())
 
 
     except Exception as error:
