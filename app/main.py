@@ -23,6 +23,11 @@ from app.models.gasConcentration import GasConcentration
 #import schemas
 from app.schemas.gasConcentration import GasConcentrationSchema
 
+# import or operator from sqlalchemy
+
+from sqlalchemy import or_
+
+
 #get objet of gas concentration schema
 gas_schema=GasConcentrationSchema()
 gases_schema = GasConcentrationSchema(many=True)
@@ -130,6 +135,10 @@ def get():
 
         # get ubications
         ubications_list:list=[]
+        ids_ubications:list=[]
+        location_in_database=False
+
+
 
         for ubications in request.args.get("ubications").split(";"):
             print(ubications)
@@ -138,33 +147,19 @@ def get():
                                "lat":lat_lng[0].split(":")[1],
                                "lng":lat_lng[1].split(":")[1]
             })
-
-        location_in_database=False
-
-
-
-
-        for ubication_dict in ubications_list:
-
-            query_ubication= Ubication.query.filter(Ubication.lat==ubication_dict['lat']).filter(Ubication.lng==ubication_dict['lng']).first()
+            query_ubication = Ubication.query.filter(Ubication.lat==lat_lng[0].split(":")[1]).filter(Ubication.lng==lat_lng[1].split(":")[1]).first()
 
             if query_ubication != None:
-                query=query.filter(GasConcentration.ubication_id ==query_ubication.id)
                 location_in_database=True
-                print("location_in_database: ", location_in_database)
-                print("query_ubication.id", query_ubication.id)
+                ids_ubications.append(query_ubication.id)
 
-
-        
+        query=query.filter(GasConcentration.ubication_id.in_(ids_ubications))
 
 
         if location_in_database==True:
             concentrations=query.all()
         else:
             concentrations=[]
-
-        #print("query:", query)
-
 
         return gases_schema.jsonify(query.all())
 
