@@ -2,7 +2,7 @@ from flask import Flask,request
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.server.server import Server
-
+from flask_cors import CORS, cross_origin
 
 
 from datetime import datetime
@@ -37,6 +37,12 @@ db=s1.getDatabaseObject()
 
 # Create tables in the database
 db.create_all()
+
+
+#set cors
+
+CORS(s1.getAppObject())
+
 
 
 

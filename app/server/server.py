@@ -3,6 +3,7 @@ from flask_marshmallow import Marshmallow
 from app.shared.singletonMeta.singletonMeta import SingletonMeta
 from flask import Flask
 
+
 class Server(metaclass=SingletonMeta):
 
     port:str="3306"
