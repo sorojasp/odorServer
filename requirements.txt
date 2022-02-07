@@ -6,5 +6,4 @@ flask-marshmallow
 marshmallow-sqlalchemy
 pymysql
 pytz==2021.3
--m pip install --
-upgrade pip
+flask-cors
