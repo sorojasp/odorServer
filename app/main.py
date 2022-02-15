@@ -22,15 +22,19 @@ from app.models.gasConcentration import GasConcentration
 
 #import schemas
 from app.schemas.gasConcentration import GasConcentrationSchema
+from app.schemas.ubication import UbicationSchema
 
 # import or operator from sqlalchemy
 
 from sqlalchemy import or_
 
-
 #get objet of gas concentration schema
 gas_schema=GasConcentrationSchema()
 gases_schema = GasConcentrationSchema(many=True)
+
+#get objet of gas concentration schema
+ubication_schema=UbicationSchema()
+ubications_schema = UbicationSchema(many=True)
 
 # Get db object
 db=s1.getDatabaseObject()
@@ -48,7 +52,7 @@ CORS(s1.getAppObject())
 
 
 @app.route("/gasConcentrations", methods=["POST"])
-def post():
+def post_gasConcentrations():
 
     """
         data to probe  NH3=200.38&CO2=10000.38&CH4=100000.99&H2S=100.25&SO2=236.88&T=200.38&H=200.388
@@ -67,9 +71,6 @@ def post():
         #Ubication
         lat=request.args.get("H")
         lng=request.args.get("I")
-
-
-
 
 
 
@@ -118,7 +119,7 @@ def post():
 
 
 @app.route("/gasConcentrations", methods=["GET"])
-def get():
+def get_gasConcentrations():
 
     try:
 
@@ -132,12 +133,23 @@ def get():
         datetime_end =  datetime.strptime(request.args.get("datetimeEnd"), format_data)
 
 
-
         query_filter=GasConcentration.query
-
         query=None
 
-        query=query_filter.filter(GasConcentration.dateTime>=datetime_start).filter(GasConcentration.dateTime<=datetime_end)
+        #get probe mode
+
+        probe_mode_str=request.args.get("probe_mode")
+        probe_mode_bool=False
+
+        if probe_mode_str=='1':
+            probe_mode_bool=True
+        elif probe_mode_str=='0':
+            probe_mode_bool=False
+        else:
+            probe_mode_bool=False
+
+        # filter with probe mode and dateTime
+        query=query_filter.filter(GasConcentration.dateTime>=datetime_start).filter(GasConcentration.dateTime<=datetime_end).filter(GasConcentration.probe_mode==probe_mode_bool)
 
         # get ubications
         ubications_list:list=[]
@@ -168,6 +180,26 @@ def get():
             concentrations=[]
 
         return gases_schema.jsonify(query.all())
+
+
+    except Exception as error:
+
+        response={
+                "result":False,
+                "detail":str(error)
+                }
+        return json.dumps(response, indent = 4)
+
+
+
+@app.route("/nodeUbications", methods=["GET"])
+def get_nodeUbications():
+
+    try:
+
+
+        all_ubicationNodes = Ubication.query.all()
+        return ubications_schema.jsonify(all_ubicationNodes)
 
 
     except Exception as error:
