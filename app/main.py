@@ -20,8 +20,11 @@ s1=Server(app)
 from app.models.ubication import Ubication
 from app.models.gasConcentration import GasConcentration
 
+
 #import schemas
 from app.schemas.gasConcentration import GasConcentrationSchema
+
+
 from app.schemas.ubication import UbicationSchema
 
 # import or operator from sqlalchemy
@@ -38,6 +41,7 @@ ubications_schema = UbicationSchema(many=True)
 
 # Get db object
 db=s1.getDatabaseObject()
+engine_container = db.get_engine(app)
 
 # Create tables in the database
 db.create_all()
@@ -73,7 +77,7 @@ def post_gasConcentrations():
         lng=request.args.get("I")
 
 
-
+        # find ubication if already exist
         ubication=Ubication.query.filter(Ubication.lat==lat).filter(Ubication.lng==lng).first()
 
         if ubication==None:
@@ -99,23 +103,22 @@ def post_gasConcentrations():
 
         dateTime=datetime.now(tz = timezone('America/Bogota'))
 
-
-
         print("new ubication:", ubication)
-
-
-
 
         new_gas_concentation=GasConcentration(NH3, CO2, CH4, H2S, SO2, temperature, humidity, dateTime, ubication.id,probe_mode_boolean)
         s1.getDatabaseObject().session.add(new_gas_concentation)
         s1.getDatabaseObject().session.commit()
-
 
         return gas_schema.jsonify(new_gas_concentation)
 
     except Exception as error:
         print(error)
         return "Error!"
+
+    finally:
+        print("pass for finally =)")
+        cleanup(db.session)
+
 
 
 @app.route("/gasConcentrations", methods=["GET"])
@@ -179,6 +182,8 @@ def get_gasConcentrations():
         else:
             concentrations=[]
 
+        print("result f query: ", query.all())
+
         return gases_schema.jsonify(query.all())
 
 
@@ -189,6 +194,10 @@ def get_gasConcentrations():
                 "detail":str(error)
                 }
         return json.dumps(response, indent = 4)
+    finally:
+        print("pass for finally =)")
+        cleanup(db.session)
+
 
 
 
@@ -209,3 +218,21 @@ def get_nodeUbications():
                 "detail":str(error)
                 }
         return json.dumps(response, indent = 4)
+
+    finally:
+        print("pass for finally =)")
+        cleanup(db.session)
+
+
+
+def cleanup(session):
+    """
+    This method cleans up the session object and also closes the connection pool using the dispose method.
+    """
+
+    session.close()
+    engine_container.dispose()
+
+
+if __name__ == '__main__':
+    app.run()

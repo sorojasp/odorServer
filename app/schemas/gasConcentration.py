@@ -1,5 +1,7 @@
 from app.server.server import Server
 
+
+
 server=Server()
 class GasConcentrationSchema(server.getMarshmallowObject().Schema):
     class Meta:
