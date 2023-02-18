@@ -90,6 +90,8 @@ def post_gasConcentrations():
         #print(request.json['lastname']) get data from body
 
         #Ubication
+
+        print("here")
         lat=request.args.get("H")
         lng=request.args.get("I")
 
@@ -122,7 +124,7 @@ def post_gasConcentrations():
 
         dateTime=datetime.now(tz = timezone('America/Bogota'))
 
-        
+        print("ubication: ", ubication)
 
         print("new ubication:", ubication)
 
@@ -146,6 +148,9 @@ def post_gasConcentrations():
 def get_gasConcentrations():
 
     try:
+
+        
+        print("here =(")
 
         format_data = "%Y-%m-%dT%H:%M:%S"
         # Using strptime with datetime we will format
