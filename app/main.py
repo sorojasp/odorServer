@@ -9,6 +9,7 @@ import pytz
 from pytz import timezone
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.pool import NullPool
 from flask_marshmallow import Marshmallow
 
 # import or operator from sqlalchemy
@@ -39,6 +40,7 @@ with app.app_context():
     app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{user}:{password}@{host}:{port}/{database}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db = SQLAlchemy(app)
+    engine_container = db.get_engine()
     ma = Marshmallow(app)
 
     # models definitions
@@ -50,7 +52,7 @@ with app.app_context():
     gas_schema, gases_schema   =  definition_GasConcentrationSchema(ma)
 
 
-    engine_container = db.get_engine()
+    
 
     # Create tables in the database
     db.create_all()
