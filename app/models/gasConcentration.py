@@ -38,3 +38,5 @@ def definition_gasConcentration(db):
             self.dateTime=dateTime
             self.ubication_id=ubication_id
             self.probe_mode=probe_mode
+    
+    return GasConcentration

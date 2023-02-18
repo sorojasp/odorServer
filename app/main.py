@@ -42,15 +42,15 @@ with app.app_context():
     ma = Marshmallow(app)
 
     # models definitions
-    definition_ubication(db)
-    definition_gasConcentration(db)
+    Ubication = definition_ubication(db)
+    GasConcentration = definition_gasConcentration(db)
 
     # get  schema instance
     ubication_schema, ubications_schema =   definition_ubicationSchema(ma)
     gas_schema, gases_schema   =  definition_GasConcentrationSchema(ma)
 
 
-    #engine_container = db.get_engine(app)
+    engine_container = db.get_engine()
 
     # Create tables in the database
     db.create_all()
@@ -93,8 +93,8 @@ def post_gasConcentrations():
 
         if ubication==None:
             ubication=Ubication(lat,lng)
-            s1.getDatabaseObject().session.add(ubication)
-            s1.getDatabaseObject().session.commit()
+            db.session.add(ubication)
+            db.session.commit()
 
         NH3=request.args.get("A")
         CO2=request.args.get("B")
@@ -117,8 +117,8 @@ def post_gasConcentrations():
         print("new ubication:", ubication)
 
         new_gas_concentation=GasConcentration(NH3, CO2, CH4, H2S, SO2, temperature, humidity, dateTime, ubication.id,probe_mode_boolean)
-        s1.getDatabaseObject().session.add(new_gas_concentation)
-        s1.getDatabaseObject().session.commit()
+        db.session.add(new_gas_concentation)
+        db.session.commit()
 
         return gas_schema.jsonify(new_gas_concentation)
 
@@ -200,6 +200,8 @@ def get_gasConcentrations():
 
     except Exception as error:
 
+        print("error: ", error)
+
         response={
                 "result":False,
                 "detail":str(error)
@@ -242,7 +244,7 @@ def cleanup(session):
     """
 
     session.close()
-    #engine_container.dispose()
+    engine_container.dispose()
 
 
 if __name__ == '__main__':
