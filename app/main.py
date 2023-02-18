@@ -40,7 +40,6 @@ with app.app_context():
     app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{user}:{password}@{host}:{port}/{database}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db = SQLAlchemy(app)
-    engine_container = db.get_engine()
     ma = Marshmallow(app)
 
     # models definitions
@@ -56,6 +55,7 @@ with app.app_context():
 
     # Create tables in the database
     db.create_all()
+    engine_container = db.get_engine()
 
 
     #set cors
