@@ -2,4 +2,4 @@
 
 
 1. activate the env cd myenv/Scripts   ---> ./activate
-2. execute the file wsgi.py
+2. execute py -m flask run

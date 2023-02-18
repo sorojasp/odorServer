@@ -1,7 +1,6 @@
 from flask import Flask,request
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.server.server import Server
 from flask_cors import CORS, cross_origin
 
 
@@ -9,47 +8,59 @@ from datetime import datetime
 import pytz
 from pytz import timezone
 
-#import
-import json
-
-app = Flask(__name__)
-
-s1=Server(app)
-
-# Import models
-from app.models.ubication import Ubication
-from app.models.gasConcentration import GasConcentration
-
-
-#import schemas
-from app.schemas.gasConcentration import GasConcentrationSchema
-
-
-from app.schemas.ubication import UbicationSchema
+from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 
 # import or operator from sqlalchemy
 
 from sqlalchemy import or_
 
-#get objet of gas concentration schema
-gas_schema=GasConcentrationSchema()
-gases_schema = GasConcentrationSchema(many=True)
 
-#get objet of gas concentration schema
-ubication_schema=UbicationSchema()
-ubications_schema = UbicationSchema(many=True)
+# Import models
+from app.models.ubication import definition_ubication
+from app.models.gasConcentration import definition_gasConcentration
 
-# Get db object
-db=s1.getDatabaseObject()
-engine_container = db.get_engine(app)
+#import schemas
+from app.schemas.gasConcentration import definition_GasConcentrationSchema
+from app.schemas.ubication import definition_ubicationSchema
 
-# Create tables in the database
-db.create_all()
+#import
+import json
+
+port:str="3306"
+host:str="191.101.79.154"
+user:str="u963953533_admin"
+password:str="#Stiven1911"
+database:str="u963953533_sr7nose"
+
+app = Flask(__name__)
+
+with app.app_context():
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{user}:{password}@{host}:{port}/{database}'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db = SQLAlchemy(app)
+    ma = Marshmallow(app)
+
+    # models definitions
+    definition_ubication(db)
+    definition_gasConcentration(db)
+
+    # get  schema instance
+    ubication_schema, ubications_schema =   definition_ubicationSchema(ma)
+    gas_schema, gases_schema   =  definition_GasConcentrationSchema(ma)
 
 
-#set cors
+    #engine_container = db.get_engine(app)
 
-CORS(s1.getAppObject())
+    # Create tables in the database
+    db.create_all()
+
+
+    #set cors
+    CORS(app)
+        
+
+
 
 
 
@@ -231,8 +242,8 @@ def cleanup(session):
     """
 
     session.close()
-    engine_container.dispose()
+    #engine_container.dispose()
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=os.getenv("PORT", default=5000))
+    app.run()
