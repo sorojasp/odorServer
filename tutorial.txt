@@ -1,0 +1,5 @@
+/******** How to deploy the server in production environment  **********************/
+
+
+1. activate the env cd myenv/Scripts   ---> ./activate
+2. execute the file wsgi.py
