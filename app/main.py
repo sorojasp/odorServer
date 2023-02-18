@@ -25,6 +25,10 @@ from app.models.gasConcentration import definition_gasConcentration
 from app.schemas.gasConcentration import definition_GasConcentrationSchema
 from app.schemas.ubication import definition_ubicationSchema
 
+# import fnc to close connection
+
+from app.shared.closeConnection import cleanup
+
 #import
 import json
 
@@ -56,7 +60,7 @@ with app.app_context():
     # Create tables in the database
     db.create_all()
     engine_container = db.get_engine()
-    cleanup(db.session)#close the connection
+    cleanup(db.session, engine_container)#close the connection
 
 
     #set cors
@@ -126,7 +130,7 @@ def post_gasConcentrations():
 
     finally:
         print("pass for finally =)")
-        cleanup(db.session)
+        cleanup(db.session, engine_container)
 
 
 
@@ -207,7 +211,7 @@ def get_gasConcentrations():
         return json.dumps(response, indent = 4)
     finally:
         print("pass for finally =)")
-        cleanup(db.session)
+        cleanup(db.session, engine_container)
 
 
 
@@ -232,17 +236,11 @@ def get_nodeUbications():
 
     finally:
         print("pass for finally =)")
-        cleanup(db.session)
+        cleanup(db.session, engine_container)
 
 
 
-def cleanup(session):
-    """
-    This method cleans up the session object and also closes the connection pool using the dispose method.
-    """
 
-    session.close()
-    engine_container.dispose()
 
 
 if __name__ == '__main__':
