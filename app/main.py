@@ -65,6 +65,7 @@ with app.app_context():
 
     #set cors
     #CORS(app)
+    cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
         
 
 
