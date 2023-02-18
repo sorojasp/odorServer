@@ -56,7 +56,7 @@ with app.app_context():
     # Create tables in the database
     db.create_all()
     engine_container = db.get_engine()
-    cleanup(db.session)
+    cleanup(db.session)#close the connection
 
 
     #set cors
