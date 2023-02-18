@@ -7,10 +7,10 @@ from flask import Flask
 class Server(metaclass=SingletonMeta):
 
     port:str="3306"
-    host:str="199.79.62.144"
-    user:str="ingnova1_stiven"
+    host:str="191.101.79.154"
+    user:str="u963953533_admin"
     password:str="#Stiven1911"
-    database:str="ingnova1_sr7nose"
+    database:str="u963953533_sr7nose"
     app=None
     db=None
     ma=None
