@@ -97,6 +97,8 @@ def post_gasConcentrations():
         # find ubication if already exist
         ubication=Ubication.query.filter(Ubication.lat==lat).filter(Ubication.lng==lng).first()
 
+        print("ubication: ", ubication)
+
         if ubication==None:
             ubication=Ubication(lat,lng)
             db.session.add(ubication)
@@ -119,6 +121,8 @@ def post_gasConcentrations():
 
 
         dateTime=datetime.now(tz = timezone('America/Bogota'))
+
+        
 
         print("new ubication:", ubication)
 
