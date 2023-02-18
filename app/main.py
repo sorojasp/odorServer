@@ -63,11 +63,6 @@ with app.app_context():
         
 
 
-
-
-
-
-
 @app.route("/gasConcentrations", methods=["POST"])
 def post_gasConcentrations():
 
