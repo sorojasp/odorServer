@@ -64,7 +64,7 @@ with app.app_context():
 
 
     #set cors
-    CORS(app)
+    #CORS(app)
         
 
 
