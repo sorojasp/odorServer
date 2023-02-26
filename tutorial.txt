@@ -3,4 +3,5 @@
 
 0- To install all the libraries    --> py -m  pip  install -r  requirements.txt
 1. activate the env cd myenv/Scripts   ---> ./activate
-2. execute py -m flask run
+2. comeback to the root of the project cd .. cd ..
+3. execute--> py -m flask run

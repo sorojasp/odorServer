@@ -136,7 +136,11 @@ def post_gasConcentrations():
 
     except Exception as error:
         print(error)
-        return "Error!"
+        
+        return json.dumps({
+                            "result":False,
+                            "detail":str(error)
+                            }, indent = 4)
 
     finally:
         print("pass for finally =)")
